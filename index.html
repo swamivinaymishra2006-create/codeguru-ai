@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CodeGuru AI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:#0f172a;
+  --card:#1e293b;
+  --text:#e2e8f0;
+  --accent:#3b82f6;
+}
+
+.light {
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#0f172a;
+}
+
+body {
+  margin:0;
+  font-family:"Inter",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+}
+
+/* ===== WELCOME SCREEN ===== */
+#welcomeScreen {
+  position:fixed;
+  width:100%;
+  height:100%;
+  background: linear-gradient(270deg,#0f172a,#1e293b,#3b82f6);
+  background-size:600% 600%;
+  animation:gradientMove 8s ease infinite, fadeIn 1s;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  z-index:1000;
+}
+
+@keyframes gradientMove {
+  0% {background-position:0% 50%;}
+  50% {background-position:100% 50%;}
+  100% {background-position:0% 50%;}
+}
+
+@keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+
+.fadeOut {
+  animation:fadeOut 0.5s forwards;
+}
+
+@keyframes fadeOut {
+  from {opacity:1;}
+  to {opacity:0;}
+}
+
+#welcomeScreen h1 {
+  font-size:36px;
+}
+
+#welcomeScreen p {
+  opacity:0.8;
+  margin:10px 0 20px;
+}
+
+#welcomeScreen button {
+  padding:12px 20px;
+  background:#3b82f6;
+  border:none;
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+#welcomeScreen button:hover {
+  transform:scale(1.08);
+}
+
+/* ===== HEADER ===== */
+header {
+  display:flex;
+  justify-content:space-between;
+  padding:15px;
+  background:var(--card);
+}
+
+/* ===== CHAT ===== */
+#chatWrapper {
+  flex:1;
+  display:flex;
+  justify-content:center;
+}
+
+#chat {
+  width:100%;
+  max-width:800px;
+  padding:20px;
+  overflow-y:auto;
+}
+
+/* ===== MESSAGES ===== */
+.msg {
+  padding:12px;
+  border-radius:12px;
+  margin:10px 0;
+  max-width:75%;
+}
+
+.user {
+  background:linear-gradient(135deg,#3b82f6,#2563eb);
+  margin-left:auto;
+}
+
+.bot {
+  background:var(--card);
+}
+
+/* ===== EXAMPLES ===== */
+#examples {
+  text-align:center;
+  margin-top:30px;
+}
+
+.exampleBtn {
+  margin:5px;
+  padding:8px 12px;
+  background:var(--card);
+  border-radius:8px;
+  cursor:pointer;
+  display:inline-block;
+}
+
+/* ===== INPUT ===== */
+#inputWrapper {
+  display:flex;
+  justify-content:center;
+  background:var(--card);
+}
+
+#inputArea {
+  width:100%;
+  max-width:800px;
+  display:flex;
+  gap:10px;
+  padding:10px;
+}
+
+input, select {
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  background:var(--bg);
+  color:var(--text);
+}
+
+input {
+  flex:1;
+}
+
+button {
+  background:var(--accent);
+  color:white;
+  border:none;
+  padding:10px;
+  border-radius:8px;
+}
+
+/* ===== TYPING ===== */
+.typing {
+  opacity:0.6;
+}
+</style>
+</head>
+
+<body>
+
+<!-- WELCOME -->
+<div id="welcomeScreen">
+  <h1>💻 CodeGuru AI</h1>
+  <p>Your personal coding assistant</p>
+  <button onclick="startApp()">🚀 Let's Begin</button>
+</div>
+
+<header>
+  <h3>CodeGuru AI</h3>
+  <button id="toggle">🌙</button>
+</header>
+
+<div id="chatWrapper">
+  <div id="chat">
+
+    <div id="examples">
+      <p>Try asking:</p>
+      <div class="exampleBtn" onclick="useExample('Binary search in Java')">Binary search</div>
+      <div class="exampleBtn" onclick="useExample('Explain recursion')">Recursion</div>
+      <div class="exampleBtn" onclick="useExample('Fix C++ error')">Fix code</div>
+    </div>
+
+  </div>
+</div>
+
+<div id="inputWrapper">
+  <div id="inputArea">
+    <select id="language">
+      <option>Java</option>
+      <option>Python</option>
+      <option>C++</option>
+      <option>JavaScript</option>
+    </select>
+
+    <input id="input" placeholder="Ask coding question..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+const chat = document.getElementById("chat");
+
+/* WELCOME ALWAYS SHOW */
+function startApp(){
+  const screen=document.getElementById("welcomeScreen");
+  screen.classList.add("fadeOut");
+
+  setTimeout(()=>{
+    screen.style.display="none";
+  },500);
+}
+
+/* THEME */
+document.getElementById("toggle").onclick=()=>{
+  document.body.classList.toggle("light");
+};
+
+/* MESSAGE */
+function addMessage(text,type){
+  const div=document.createElement("div");
+  div.className="msg "+type;
+  div.innerText=text;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+/* EXAMPLE */
+function useExample(text){
+  document.getElementById("input").value=text;
+}
+
+/* SEND */
+async function sendMessage(){
+  const input=document.getElementById("input");
+  const text=input.value.trim();
+  const lang=document.getElementById("language").value;
+
+  if(!text) return;
+
+  addMessage(text,"user");
+  input.value="";
+
+  document.getElementById("examples")?.remove();
+
+  const typing=document.createElement("div");
+  typing.className="msg bot typing";
+  typing.innerText="AI is thinking...";
+  chat.appendChild(typing);
+
+  try{
+    const res=await fetch("http://localhost:5000/chat",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message:text,language:lang})
+    });
+
+    const data=await res.json();
+    typing.remove();
+    addMessage(data.reply,"bot");
+
+  }catch(e){
+    typing.remove();
+    addMessage("Error connecting backend","bot");
+  }
+}
+
+/* ENTER */
+document.getElementById("input").addEventListener("keypress",e=>{
+  if(e.key==="Enter") sendMessage();
+});
+</script>
+
+</body>
+</html>
