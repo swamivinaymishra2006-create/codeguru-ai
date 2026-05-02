@@ -11,7 +11,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-app.post("/chat", async (req, res) => {
+app.post("/api/chat", async (req, res) => {
   const { message, language } = req.body;
 
   try {
@@ -38,7 +38,6 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-app.listen(5000, () => console.log("Server running on port 5000"));
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
