@@ -1,37 +1,42 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const OpenAI = require("openai");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 app.post("/api/chat", async (req, res) => {
   const { message, language } = req.body;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `You are a coding AI. Always answer in ${language}. Provide code inside triple backticks and explanation.`
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        {
-          role: "user",
-          content: message
-        }
-      ]
-    });
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `You are a coding AI. Answer in ${language}. Give code in proper format.\n\nUser: ${message}`,
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
 
-    res.json({
-      reply: response.choices[0].message.content
-    });
+    const data = await response.json();
+
+    const reply =
+      data.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+
+    res.json({ reply });
 
   } catch (err) {
     res.json({ reply: err.message });
