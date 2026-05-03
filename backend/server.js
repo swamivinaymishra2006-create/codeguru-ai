@@ -71,7 +71,7 @@ app.post("/api/chat", async (req, res) => {
 
 // 🔥 PORT (Render compatible)
 const PORT = process.env.PORT || 5000;
-
+console.log("API KEY:", process.env.GEMINI_API_KEY);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
